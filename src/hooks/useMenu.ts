@@ -10,9 +10,10 @@ export function useMenu() {
   useEffect(() => {
     fetchProducts();
 
-    // Set up real-time subscription for product changes
+    // Set up real-time subscription for product changes with unique channel name
+    const channelId = `products-realtime-${Date.now()}`;
     const productsChannel = supabase
-      .channel('products-changes')
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
@@ -21,15 +22,10 @@ export function useMenu() {
           table: 'products'
         },
         (payload) => {
-          console.log('Product changed:', payload);
+          console.log('✅ Product changed:', payload);
           fetchProducts(); // Refetch all products when any change occurs
         }
       )
-      .subscribe();
-
-    // Set up real-time subscription for product variations changes
-    const variationsChannel = supabase
-      .channel('variations-changes')
       .on(
         'postgres_changes',
         {
@@ -38,31 +34,46 @@ export function useMenu() {
           table: 'product_variations'
         },
         (payload) => {
-          console.log('Variation changed:', payload);
+          console.log('✅ Variation changed:', payload);
           fetchProducts(); // Refetch all products when variations change
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('📡 Real-time subscription status:', status);
+      });
 
     // Refetch data when window regains focus (user switches back from admin)
     const handleFocus = () => {
-      console.log('Window focused - refreshing products...');
+      console.log('👁️ Window focused - refreshing products...');
       fetchProducts();
     };
 
+    // Also add visibility change handler for better cross-tab updates
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('👁️ Tab became visible - refreshing products...');
+        fetchProducts();
+      }
+    };
+
     window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // Cleanup subscriptions on unmount
     return () => {
       supabase.removeChannel(productsChannel);
-      supabase.removeChannel(variationsChannel);
       window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
+      console.log('🔄 Fetching products from database...');
+      
+      // Force fresh data by clearing any potential cache
+      const timestamp = Date.now();
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -71,6 +82,8 @@ export function useMenu() {
         .order('name', { ascending: true });
 
       if (error) throw error;
+      
+      console.log(`📦 Found ${data?.length || 0} products`);
       
       // Fetch variations for each product
       const productsWithVariations = await Promise.all(
@@ -81,6 +94,10 @@ export function useMenu() {
             .eq('product_id', product.id)
             .order('quantity_mg', { ascending: true });
           
+          if (variations && variations.length > 0) {
+            console.log(`  └─ ${product.name}: ${variations.length} variations, prices:`, variations.map(v => `${v.name}:₱${v.price}`));
+          }
+          
           return {
             ...product,
             variations: variations || []
@@ -88,11 +105,12 @@ export function useMenu() {
         })
       );
 
+      console.log('✅ Products updated successfully at', new Date().toLocaleTimeString());
       setProducts(productsWithVariations);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch products');
-      console.error('Error fetching products:', err);
+      console.error('❌ Error fetching products:', err);
     } finally {
       setLoading(false);
     }
@@ -175,6 +193,26 @@ export function useMenu() {
     }
   };
 
+  const updateVariation = async (id: string, updates: Partial<ProductVariation>) => {
+    try {
+      const { data, error } = await supabase
+        .from('product_variations')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      // Refresh products to include updated variation
+      await fetchProducts();
+      return { success: true, data };
+    } catch (err) {
+      console.error('Error updating variation:', err);
+      return { success: false, error: err instanceof Error ? err.message : 'Failed to update variation' };
+    }
+  };
+
   const deleteVariation = async (id: string) => {
     try {
       const { error } = await supabase
@@ -203,6 +241,7 @@ export function useMenu() {
     updateProduct,
     deleteProduct,
     addVariation,
+    updateVariation,
     deleteVariation
   };
 }

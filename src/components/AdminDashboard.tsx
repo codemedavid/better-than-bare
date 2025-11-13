@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Save, X, ArrowLeft, Beaker, TrendingUp, Package, Users, Lock, FolderOpen, CreditCard, Settings, Sparkles, Heart, Layers, Shield } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ArrowLeft, Beaker, TrendingUp, Package, Users, Lock, FolderOpen, CreditCard, Settings, Sparkles, Heart, Layers, Shield, RefreshCw } from 'lucide-react';
 import type { Product } from '../types';
 import { useMenu } from '../hooks/useMenu';
 import { useCategories } from '../hooks/useCategories';
@@ -16,13 +16,25 @@ const AdminDashboard: React.FC = () => {
   });
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
-  const { products, loading, addProduct, updateProduct, deleteProduct } = useMenu();
+  const { products, loading, addProduct, updateProduct, deleteProduct, refreshProducts } = useMenu();
   const { categories } = useCategories();
   const [currentView, setCurrentView] = useState<'dashboard' | 'products' | 'add' | 'edit' | 'categories' | 'payments' | 'settings' | 'coa'>('dashboard');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [managingVariationsFor, setManagingVariationsFor] = useState<Product | null>(null);
+  const [managingVariationsProductId, setManagingVariationsProductId] = useState<string | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  const variationManagerProduct = managingVariationsProductId
+    ? products.find((product) => product.id === managingVariationsProductId) || null
+    : null;
+
+  const variationManagerModal = variationManagerProduct ? (
+    <VariationManager
+      product={variationManagerProduct}
+      onClose={() => setManagingVariationsProductId(null)}
+    />
+  ) : null;
   
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
@@ -45,6 +57,7 @@ const AdminDashboard: React.FC = () => {
   const handleAddProduct = () => {
     setCurrentView('add');
     setSelectedProducts(new Set());
+    setManagingVariationsProductId(null);
     const defaultCategory = categories.length > 0 ? categories[0].id : 'research';
     setFormData({
       name: '',
@@ -70,10 +83,12 @@ const AdminDashboard: React.FC = () => {
     setFormData(product);
     setCurrentView('edit');
     setSelectedProducts(new Set());
+    setManagingVariationsProductId(null);
   };
 
   const handleDeleteProduct = async (id: string) => {
     if (confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+      setManagingVariationsProductId(null);
       try {
         setIsProcessing(true);
         const result = await deleteProduct(id);
@@ -116,6 +131,7 @@ const AdminDashboard: React.FC = () => {
         }
 
         setSelectedProducts(new Set());
+        setManagingVariationsProductId(null);
       } catch (error) {
         alert('Failed to delete products. Please try again.');
       } finally {
@@ -137,6 +153,7 @@ const AdminDashboard: React.FC = () => {
   const toggleSelectAll = () => {
     if (selectedProducts.size === products.length) {
       setSelectedProducts(new Set());
+      setManagingVariationsProductId(null);
     } else {
       setSelectedProducts(new Set(products.map(p => p.id)));
     }
@@ -167,6 +184,7 @@ const AdminDashboard: React.FC = () => {
       }
       setCurrentView('products');
       setEditingProduct(null);
+      setManagingVariationsProductId(null);
     } catch (error) {
       alert(`Failed to save product: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
@@ -177,6 +195,7 @@ const AdminDashboard: React.FC = () => {
   const handleCancel = () => {
     setCurrentView(currentView === 'add' || currentView === 'edit' ? 'products' : 'dashboard');
     setEditingProduct(null);
+    setManagingVariationsProductId(null);
   };
 
   // Dashboard Stats
@@ -204,6 +223,12 @@ const AdminDashboard: React.FC = () => {
     localStorage.removeItem('peptide_admin_auth');
     setPassword('');
     setCurrentView('dashboard');
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refreshProducts();
+    setTimeout(() => setIsRefreshing(false), 500);
   };
 
   // Login Screen
@@ -270,7 +295,9 @@ const AdminDashboard: React.FC = () => {
   // Form View (Add/Edit)
   if (currentView === 'add' || currentView === 'edit') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <>
+        {variationManagerModal}
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
         <div className="bg-white/90 backdrop-blur-sm shadow-lg border-b-2 border-blue-100">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
             <div className="flex items-center justify-between h-14 md:h-16 gap-2">
@@ -358,6 +385,12 @@ const AdminDashboard: React.FC = () => {
                     className="input-field text-sm md:text-base"
                     placeholder="0"
                   />
+                  {editingProduct && editingProduct.variations && editingProduct.variations.length > 0 && (
+                    <p className="text-xs text-orange-600 mt-2 flex items-start gap-1.5 bg-orange-50 p-2 rounded border border-orange-200">
+                      <span className="text-base">⚠️</span>
+                      <span>This product has <strong>{editingProduct.variations.length} size variation(s)</strong>. Customers will see those prices instead of this base price. Use the <strong>"Manage Sizes"</strong> button to update the prices shown on the website.</span>
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -543,14 +576,17 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
   // Products List View
   if (currentView === 'products') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <>
+        {variationManagerModal}
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
         <div className="bg-white/90 backdrop-blur-sm shadow-lg border-b-2 border-blue-100">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
             <div className="flex items-center justify-between h-14 md:h-16">
@@ -565,6 +601,15 @@ const AdminDashboard: React.FC = () => {
                 <h1 className="text-base md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">Products</h1>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-2 md:px-3 py-1.5 md:py-2 rounded-lg md:rounded-xl font-medium text-xs md:text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-1 md:gap-2 disabled:opacity-50"
+                  title="Refresh data"
+                >
+                  <RefreshCw className={`h-3 w-3 md:h-4 md:w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  <span className="hidden sm:inline">{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+                </button>
                 {selectedProducts.size > 0 && (
                   <button
                     onClick={handleBulkDelete}
@@ -626,24 +671,33 @@ const AdminDashboard: React.FC = () => {
                   </div>
                   <div className="flex gap-1 shrink-0">
                     <button
-                      onClick={() => setManagingVariationsFor(product)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('🟣 Layers button clicked (mobile) for:', product.name);
+                        setManagingVariationsProductId(product.id);
+                      }}
                       disabled={isProcessing}
-                      className="p-1.5 text-purple-600 hover:bg-purple-100 rounded-lg transition-colors"
-                      title="Manage Sizes"
+                      className={`p-1.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                        product.variations && product.variations.length > 0
+                          ? 'bg-purple-500 text-white hover:bg-purple-600 shadow-md cursor-pointer'
+                          : 'text-purple-600 hover:bg-purple-100 cursor-pointer'
+                      }`}
+                      title="Manage Sizes - Click to edit prices!"
                     >
                       <Layers className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleEditProduct(product)}
                       disabled={isProcessing}
-                      className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                      className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteProduct(product.id)}
                       disabled={isProcessing}
-                      className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                      className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -699,6 +753,7 @@ const AdminDashboard: React.FC = () => {
                     <th className="px-6 py-4 text-left text-sm font-bold text-gray-800">Product</th>
                     <th className="px-6 py-4 text-left text-sm font-bold text-gray-800 hidden lg:table-cell">Category</th>
                     <th className="px-6 py-4 text-left text-sm font-bold text-gray-800">Price</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-800">Sizes</th>
                     <th className="px-6 py-4 text-left text-sm font-bold text-gray-800">Purity</th>
                     <th className="px-6 py-4 text-left text-sm font-bold text-gray-800">Stock</th>
                     <th className="px-6 py-4 text-left text-sm font-bold text-gray-800 hidden xl:table-cell">Status</th>
@@ -725,6 +780,25 @@ const AdminDashboard: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 text-sm font-bold text-blue-600">
                         ₱{product.base_price.toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        {product.variations && product.variations.length > 0 && (
+                          <div className="text-[10px] text-orange-600 font-medium mt-1">
+                            Not used (has sizes)
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        {product.variations && product.variations.length > 0 ? (
+                          <div>
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
+                              {product.variations.length} {product.variations.length === 1 ? 'size' : 'sizes'}
+                            </span>
+                            <div className="text-[10px] text-gray-500 mt-1">
+                              Click <Layers className="w-3 h-3 inline text-purple-600" /> to edit
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-400">No sizes</span>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
@@ -751,24 +825,33 @@ const AdminDashboard: React.FC = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => setManagingVariationsFor(product)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              console.log('🟣 Layers button clicked for:', product.name);
+                              setManagingVariationsProductId(product.id);
+                            }}
                             disabled={isProcessing}
-                            className="p-2 text-purple-600 hover:bg-purple-100 rounded-xl transition-colors"
-                            title="Manage Sizes"
+                            className={`p-2 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                              product.variations && product.variations.length > 0
+                                ? 'bg-purple-500 text-white hover:bg-purple-600 shadow-md hover:shadow-lg cursor-pointer'
+                                : 'text-purple-600 hover:bg-purple-100 cursor-pointer'
+                            }`}
+                            title="Manage Sizes - Click here to edit prices!"
                           >
                             <Layers className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => handleEditProduct(product)}
                             disabled={isProcessing}
-                            className="p-2 text-blue-600 hover:bg-teal-100 rounded-xl transition-colors"
+                            className="p-2 text-blue-600 hover:bg-teal-100 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                           >
                             <Edit className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(product.id)}
                             disabled={isProcessing}
-                            className="p-2 text-red-600 hover:bg-red-100 rounded-xl transition-colors"
+                            className="p-2 text-red-600 hover:bg-red-100 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -781,7 +864,8 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -854,14 +938,8 @@ const AdminDashboard: React.FC = () => {
   // Dashboard View
   return (
     <>
-      {managingVariationsFor && (
-        <VariationManager
-          product={managingVariationsFor}
-          onClose={() => setManagingVariationsFor(null)}
-        />
-      )}
-      
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200">
+      {variationManagerModal}
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200">
       <div className="bg-white/90 backdrop-blur-sm shadow-lg border-b-2 border-blue-100">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-14 md:h-16">

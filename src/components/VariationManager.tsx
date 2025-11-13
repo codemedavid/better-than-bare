@@ -9,12 +9,19 @@ interface VariationManagerProps {
 }
 
 const VariationManager: React.FC<VariationManagerProps> = ({ product, onClose }) => {
-  const { addVariation, deleteVariation } = useMenu();
+  const { addVariation, updateVariation, deleteVariation } = useMenu();
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   
   const [newVariation, setNewVariation] = useState({
+    name: '',
+    quantity_mg: 5.0,
+    price: product.base_price,
+    stock_quantity: 0
+  });
+
+  const [editingVariation, setEditingVariation] = useState({
     name: '',
     quantity_mg: 5.0,
     price: product.base_price,
@@ -56,6 +63,39 @@ const VariationManager: React.FC<VariationManagerProps> = ({ product, onClose })
     }
   };
 
+  const handleEditVariation = (variation: ProductVariation) => {
+    setEditingId(variation.id);
+    setEditingVariation({
+      name: variation.name,
+      quantity_mg: variation.quantity_mg,
+      price: variation.price,
+      stock_quantity: variation.stock_quantity
+    });
+    setIsAdding(false);
+  };
+
+  const handleUpdateVariation = async () => {
+    if (!editingId || !editingVariation.name || editingVariation.price <= 0 || editingVariation.quantity_mg <= 0) {
+      alert('Please fill in all fields correctly');
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      const result = await updateVariation(editingId, editingVariation);
+      if (result.success) {
+        setEditingId(null);
+        alert('Variation updated successfully!');
+      } else {
+        alert(result.error || 'Failed to update variation');
+      }
+    } catch (error) {
+      alert('Failed to update variation');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleDeleteVariation = async (id: string, name: string) => {
     if (!confirm(`Delete ${name} variation? This cannot be undone.`)) return;
 
@@ -86,6 +126,9 @@ const VariationManager: React.FC<VariationManagerProps> = ({ product, onClose })
                 Manage Size Variations
               </h2>
               <p className="text-teal-100 mt-1">Product: {product.name}</p>
+              <p className="text-teal-50 text-sm mt-2 bg-teal-700/30 px-3 py-1.5 rounded-lg inline-block">
+                💡 <strong>These prices</strong> are what customers see on the website!
+              </p>
             </div>
             <button
               onClick={onClose}
@@ -116,36 +159,123 @@ const VariationManager: React.FC<VariationManagerProps> = ({ product, onClose })
             ) : (
               <div className="space-y-3">
                 {product.variations.map((variation) => (
-                  <div
-                    key={variation.id}
-                    className="bg-gradient-to-r from-teal-50 to-emerald-50 border-2 border-teal-200 rounded-xl p-4 flex items-center justify-between"
-                  >
-                    <div className="flex-1 grid grid-cols-4 gap-4">
-                      <div>
-                        <div className="text-xs text-gray-500 mb-1">Size Name</div>
-                        <div className="font-bold text-gray-900">{variation.name}</div>
+                  <div key={variation.id}>
+                    {editingId === variation.id ? (
+                      // Edit Mode
+                      <div className="bg-white border-2 border-blue-300 rounded-xl p-4 space-y-4">
+                        <h4 className="font-bold text-gray-900 mb-4">Edit Variation</h4>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                              Size Name *
+                            </label>
+                            <input
+                              type="text"
+                              value={editingVariation.name}
+                              onChange={(e) => setEditingVariation({ ...editingVariation, name: e.target.value })}
+                              className="input-field"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                              Quantity (mg) *
+                            </label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={editingVariation.quantity_mg}
+                              onChange={(e) => setEditingVariation({ ...editingVariation, quantity_mg: parseFloat(e.target.value) || 0 })}
+                              className="input-field"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                              Price (₱) *
+                            </label>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={editingVariation.price}
+                              onChange={(e) => setEditingVariation({ ...editingVariation, price: parseFloat(e.target.value) || 0 })}
+                              className="input-field"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                              Stock Quantity *
+                            </label>
+                            <input
+                              type="number"
+                              value={editingVariation.stock_quantity}
+                              onChange={(e) => setEditingVariation({ ...editingVariation, stock_quantity: parseInt(e.target.value) || 0 })}
+                              className="input-field"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex gap-3 pt-4">
+                          <button
+                            onClick={handleUpdateVariation}
+                            disabled={isProcessing}
+                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                          >
+                            <Save className="w-5 h-5" />
+                            Save Changes
+                          </button>
+                          <button
+                            onClick={() => setEditingId(null)}
+                            disabled={isProcessing}
+                            className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-medium transition-all"
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-xs text-gray-500 mb-1">Quantity</div>
-                        <div className="font-semibold text-gray-700">{variation.quantity_mg}mg</div>
+                    ) : (
+                      // View Mode
+                      <div className="bg-gradient-to-r from-teal-50 to-emerald-50 border-2 border-teal-200 rounded-xl p-4 flex items-center justify-between">
+                        <div className="flex-1 grid grid-cols-4 gap-4">
+                          <div>
+                            <div className="text-xs text-gray-500 mb-1">Size Name</div>
+                            <div className="font-bold text-gray-900">{variation.name}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-gray-500 mb-1">Quantity</div>
+                            <div className="font-semibold text-gray-700">{variation.quantity_mg}mg</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-gray-500 mb-1">Price</div>
+                            <div className="font-semibold text-teal-600">₱{variation.price.toLocaleString()}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-gray-500 mb-1">Stock</div>
+                            <div className="font-semibold text-gray-700">{variation.stock_quantity} units</div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 ml-4">
+                          <button
+                            onClick={() => handleEditVariation(variation)}
+                            disabled={isProcessing}
+                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50"
+                            title="Edit variation"
+                          >
+                            <Edit className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteVariation(variation.id, variation.name)}
+                            disabled={isProcessing}
+                            className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50"
+                            title="Delete variation"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-xs text-gray-500 mb-1">Price</div>
-                        <div className="font-semibold text-teal-600">₱{variation.price.toLocaleString()}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-gray-500 mb-1">Stock</div>
-                        <div className="font-semibold text-gray-700">{variation.stock_quantity} units</div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteVariation(variation.id, variation.name)}
-                      disabled={isProcessing}
-                      className="ml-4 p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50"
-                      title="Delete variation"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -155,7 +285,10 @@ const VariationManager: React.FC<VariationManagerProps> = ({ product, onClose })
           {/* Add New Variation */}
           <div className="border-t-2 border-gray-200 pt-6">
             <button
-              onClick={() => setIsAdding(!isAdding)}
+              onClick={() => {
+                setIsAdding(!isAdding);
+                setEditingId(null); // Close edit mode when adding new
+              }}
               className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white rounded-lg font-medium transition-all shadow-md hover:shadow-lg mb-4"
             >
               <Plus className="w-5 h-5" />
