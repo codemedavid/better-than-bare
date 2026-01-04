@@ -102,15 +102,33 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClos
                 <div className="bg-gradient-to-r from-gray-50 to-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-2 border-navy-700/30 shadow-sm">
                   <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 mb-2 sm:mb-3 flex items-center gap-1.5 sm:gap-2">
                     <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gold-600" />
-                    Complete Set Includes
+                    Xpeptide Kit Inclusion
                   </h3>
                   <ul className="space-y-1.5 sm:space-y-2">
-                    {product.inclusions.map((item, index) => (
-                      <li key={index} className="text-[11px] sm:text-xs md:text-sm text-gray-700 flex items-start gap-1.5 sm:gap-2">
-                        <span className="text-gold-600 font-bold mt-0.5">✓</span>
-                        <span className="flex-1">{item}</span>
-                      </li>
-                    ))}
+                    <li className="text-[11px] sm:text-xs md:text-sm text-gray-700 flex items-start gap-1.5 sm:gap-2">
+                      <span className="text-gold-600 font-bold mt-0.5">✔️</span>
+                      <span className="flex-1">1 Peptide Vial</span>
+                    </li>
+                    <li className="text-[11px] sm:text-xs md:text-sm text-gray-700 flex items-start gap-1.5 sm:gap-2">
+                      <span className="text-gold-600 font-bold mt-0.5">✔️</span>
+                      <span className="flex-1">1 Bacteriostatic Water</span>
+                    </li>
+                    <li className="text-[11px] sm:text-xs md:text-sm text-gray-700 flex items-start gap-1.5 sm:gap-2">
+                      <span className="text-gold-600 font-bold mt-0.5">✔️</span>
+                      <span className="flex-1">6 Insulin Syringes</span>
+                    </li>
+                    <li className="text-[11px] sm:text-xs md:text-sm text-gray-700 flex items-start gap-1.5 sm:gap-2">
+                      <span className="text-gold-600 font-bold mt-0.5">✔️</span>
+                      <span className="flex-1">1 3ml Syringe</span>
+                    </li>
+                    <li className="text-[11px] sm:text-xs md:text-sm text-gray-700 flex items-start gap-1.5 sm:gap-2">
+                      <span className="text-gold-600 font-bold mt-0.5">✔️</span>
+                      <span className="flex-1">Alcohol Pads</span>
+                    </li>
+                    <li className="text-[11px] sm:text-xs md:text-sm text-gray-700 flex items-start gap-1.5 sm:gap-2">
+                      <span className="text-gold-600 font-bold mt-0.5">✔️</span>
+                      <span className="flex-1">Xpeptide Manual Guide</span>
+                    </li>
                   </ul>
                 </div>
               )}
