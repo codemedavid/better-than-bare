@@ -38,6 +38,8 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   const [orderMessage, setOrderMessage] = useState<string>('');
   const [copied, setCopied] = useState(false);
   const [contactOpened, setContactOpened] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [orderNumber, setOrderNumber] = useState<string>('');
 
   // Payment Proof
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
@@ -269,6 +271,12 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
       }
 
       console.log('✅ Order saved to database:', orderData);
+      setCreatedOrderId(orderData.id);
+
+      // Generate custom order number: SLIMMETRY-XXXX (3-4 random digits)
+      const randomDigits = Math.floor(Math.random() * 9000 + 1000); // 1000-9999
+      const customOrderNumber = `SLIMMETRY-${randomDigits}`;
+      setOrderNumber(customOrderNumber);
 
       // Get current date and time
       const now = new Date();
@@ -327,7 +335,7 @@ ${paymentProofUrl ? 'Screenshot attached to order.' : 'Pending'}
 📱 CONTACT METHOD
 WhatsApp: https://wa.me/639691574175
 
-📋 ORDER ID: ${orderData.id}
+📋 ORDER NUMBER: ${`SLIMMETRY-${Math.floor(Math.random() * 9000 + 1000)}`}
 
 Please confirm this order. Thank you!
       `.trim();
@@ -422,9 +430,26 @@ Please confirm this order. Thank you!
               <span className="bg-gradient-to-r from-black to-gray-900 bg-clip-text text-transparent">COMPLETE YOUR ORDER</span>
               <Sparkles className="w-7 h-7 text-gold-600" />
             </h1>
-            <p className="text-gray-600 mb-8 text-base md:text-lg leading-relaxed">
+            <p className="text-gray-600 mb-4 text-base md:text-lg leading-relaxed">
               Copy the order message below and send it via WhatsApp along with your payment screenshot.
             </p>
+
+            {/* Order ID Display */}
+            {orderNumber && (
+              <div className="bg-teal-50 border-2 border-teal-200 rounded-xl p-4 mb-6">
+                <p className="text-sm text-teal-700 mb-1">Your Order Number</p>
+                <p className="text-2xl font-bold text-teal-600 font-mono">
+                  {orderNumber}
+                </p>
+                <p className="text-xs text-gray-500 mt-2">Save this number to track your order</p>
+                <a
+                  href={`/track?order=${createdOrderId?.substring(0, 8)}`}
+                  className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-teal-500 text-white rounded-lg text-sm font-medium hover:bg-teal-600 transition-colors"
+                >
+                  Track Your Order →
+                </a>
+              </div>
+            )}
 
             {/* Order Message Display */}
             <div className="bg-gray-50 rounded-2xl p-6 mb-6 text-left border-2 border-navy-700/30">
@@ -435,7 +460,7 @@ Please confirm this order. Thank you!
                 </h3>
                 <button
                   onClick={handleCopyMessage}
-                  className="flex items-center gap-2 px-4 py-2 bg-navy-900 hover:bg-navy-800 text-white rounded-lg font-medium transition-all text-sm shadow-md hover:shadow-lg border border-navy-900/20"
+                  className="flex items-center gap-2 px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg font-medium transition-all text-sm shadow-md hover:shadow-lg"
                 >
                   {copied ? (
                     <>
@@ -467,7 +492,7 @@ Please confirm this order. Thank you!
             <div className="space-y-3 mb-8">
               <button
                 onClick={handleOpenContact}
-                className="w-full bg-navy-900 hover:bg-navy-800 text-white py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all flex items-center justify-center gap-2 border border-navy-900/20"
+                className="w-full bg-teal-500 hover:bg-teal-600 text-white py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all flex items-center justify-center gap-2"
               >
                 <MessageCircle className="w-5 h-5" />
                 Open WhatsApp
@@ -701,7 +726,7 @@ Please confirm this order. Thank you!
                 onClick={handleProceedToPayment}
                 disabled={!isDetailsValid}
                 className={`w-full py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg transition-all transform shadow-lg ${isDetailsValid
-                  ? 'bg-navy-900 hover:bg-navy-800 text-white hover:scale-105 hover:shadow-xl border border-navy-900/20'
+                  ? 'bg-teal-500 hover:bg-teal-600 text-white hover:scale-105 hover:shadow-xl'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
               >
@@ -773,7 +798,7 @@ Please confirm this order. Thank you!
                         <button
                           onClick={handleApplyPromoCode}
                           disabled={!promoCode || isApplyingPromo}
-                          className="px-4 py-2 bg-navy-900 text-white rounded-lg text-sm font-medium hover:bg-navy-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="px-4 py-2 bg-teal-500 text-white rounded-lg text-sm font-medium hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                           {isApplyingPromo ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -887,38 +912,6 @@ Please confirm this order. Thank you!
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
           {/* Payment Form */}
           <div className="lg:col-span-2 space-y-4 md:space-y-6">
-            {/* Shipping Location Selection */}
-            <div className="bg-white rounded-2xl shadow-lg p-5 md:p-6 border-2 border-navy-700/30">
-              <h2 className="text-lg md:text-xl font-bold text-navy-900 mb-2 md:mb-3 flex items-center gap-2">
-                <Package className="w-5 h-5 md:w-6 md:h-6 text-gold-600" />
-                Choose Shipping Location *
-              </h2>
-              <p className="text-xs md:text-sm text-gray-600 mb-4 md:mb-6">
-                Shipping rates apply to small pouches (4.1 × 9.5 inches) with a capacity of up to 3 pens. For bulk orders exceeding this size, our team will contact you for the adjusted shipping fees.
-              </p>
-              <div className="grid grid-cols-1 gap-3">
-                {shippingLocations.map((loc) => (
-                  <button
-                    key={loc.id}
-                    onClick={() => setShippingLocation(loc.id as 'LUZON' | 'VISAYAS' | 'MINDANAO' | 'MAXIM')}
-                    className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between ${shippingLocation === loc.id
-                      ? 'border-navy-900 bg-gold-50'
-                      : 'border-gray-200 hover:border-navy-700'
-                      }`}
-                  >
-                    <div className="text-left">
-                      <p className="font-semibold text-navy-900">{loc.id.replace('_', ' & ')}</p>
-                      <p className="text-sm text-gray-500">₱{loc.fee.toLocaleString()}</p>
-                    </div>
-                    {shippingLocation === loc.id && (
-                      <div className="w-6 h-6 bg-gold-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             {/* Payment Method Selection */}
             <div className="bg-white rounded-2xl shadow-lg p-5 md:p-6 border-2 border-navy-700/30">
@@ -1092,7 +1085,7 @@ Please confirm this order. Thank you!
               onClick={handlePlaceOrder}
               disabled={!contactMethod || !shippingLocation || !paymentProof || isUploadingProof}
               className={`w-full py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg shadow-lg transition-all flex items-center justify-center gap-2 ${contactMethod && shippingLocation && paymentProof && !isUploadingProof
-                ? 'bg-navy-900 hover:bg-navy-800 text-white hover:shadow-xl transform hover:scale-105 border border-navy-900/20'
+                ? 'bg-teal-500 hover:bg-teal-600 text-white hover:shadow-xl transform hover:scale-105'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
             >

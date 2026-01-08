@@ -25,20 +25,20 @@ const Cart: React.FC<CartProps> = ({
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-4 py-12">
         <div className="text-center max-w-md">
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-12 border-2 border-blue-100">
-            <div className="bg-gradient-to-br from-black to-gray-900 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl border border-navy-900/30">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-12 border-2 border-teal-100">
+            <div className="bg-gradient-to-br from-teal-500 to-teal-600 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
               <ShoppingBag className="w-12 h-12 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-3 flex items-center justify-center gap-2">
+            <h2 className="text-2xl font-bold text-deep-blue-500 mb-3 flex items-center justify-center gap-2">
               Your cart is empty
-              <Heart className="w-6 h-6 text-pink-400" />
+              <Heart className="w-6 h-6 text-leaf-green-400" />
             </h2>
-            <p className="text-gray-600 mb-8">
+            <p className="text-charcoal-500 mb-8">
               Start adding amazing products to your cart! ✨
             </p>
             <button
               onClick={onContinueShopping}
-              className="bg-navy-900 hover:bg-navy-800 text-white px-8 py-4 rounded-lg font-semibold shadow-lg hover:shadow-gold-glow transform hover:scale-105 transition-all w-full flex items-center justify-center gap-2 border border-navy-900/20"
+              className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-4 rounded-lg font-semibold shadow-lg hover:shadow-glow transform hover:scale-105 transition-all w-full flex items-center justify-center gap-2"
             >
               <ArrowLeft className="w-5 h-5" />
               Browse Products
@@ -60,15 +60,15 @@ const Cart: React.FC<CartProps> = ({
         <div className="mb-6 md:mb-8">
           <button
             onClick={onContinueShopping}
-            className="text-black hover:text-gold-600 font-medium mb-4 flex items-center gap-2 transition-colors group"
+            className="text-deep-blue-500 hover:text-teal-500 font-medium mb-4 flex items-center gap-2 transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 group-hover:-translate-x-1 transition-transform" />
             <span className="text-sm md:text-base">Continue Shopping</span>
           </button>
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-deep-blue-500 flex items-center gap-2">
               Shopping Cart
-              <Sparkles className="w-6 h-6 text-gold-600" />
+              <Sparkles className="w-6 h-6 text-teal-500" />
             </h1>
             <button
               onClick={clearCart}
@@ -86,11 +86,11 @@ const Cart: React.FC<CartProps> = ({
             {cartItems.map((item, index) => (
               <div
                 key={index}
-                className="bg-white backdrop-blur-sm rounded-lg shadow-lg hover:shadow-xl p-4 md:p-6 transition-all animate-fadeIn border border-gray-200 hover:border-navy-700"
+                className="bg-white backdrop-blur-sm rounded-lg shadow-card hover:shadow-card-hover p-4 md:p-6 transition-all animate-fadeIn border border-gray-200 hover:border-teal-300"
               >
                 <div className="flex gap-4 md:gap-6">
                   {/* Product Image */}
-                  <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden shadow-md border border-gray-300">
+                  <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden shadow-md border border-gray-200">
                     {item.product.image_url ? (
                       <img
                         src={item.product.image_url}
@@ -98,7 +98,7 @@ const Cart: React.FC<CartProps> = ({
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent">
+                      <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-teal-500 to-leaf-green-500 bg-clip-text text-transparent">
                         {item.product.name.charAt(0)}
                       </div>
                     )}
@@ -108,17 +108,17 @@ const Cart: React.FC<CartProps> = ({
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-gray-900 text-sm md:text-base mb-1 truncate">
+                        <h3 className="font-bold text-deep-blue-500 text-sm md:text-base mb-1 truncate">
                           {item.product.name}
                         </h3>
                         {item.variation && (
-                          <p className="text-xs md:text-sm text-gray-700 font-medium">
+                          <p className="text-xs md:text-sm text-charcoal-500 font-medium">
                             Variation: {item.variation.name}
                           </p>
                         )}
                         {item.product.purity_percentage && item.product.purity_percentage > 0 ? (
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-green-100 text-green-700">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-leaf-green-100 text-leaf-green-700">
                               {item.product.purity_percentage}% Pure
                             </span>
                           </div>
@@ -140,9 +140,9 @@ const Cart: React.FC<CartProps> = ({
                           onClick={() => updateQuantity(index, item.quantity - 1)}
                           className="p-1.5 md:p-2 hover:bg-gray-50 transition-colors rounded-l-lg"
                         >
-                          <Minus className="w-3 h-3 md:w-4 md:h-4 text-black" />
+                          <Minus className="w-3 h-3 md:w-4 md:h-4 text-deep-blue-500" />
                         </button>
-                        <span className="px-3 md:px-4 py-1.5 md:py-2 font-bold text-gray-800 min-w-[32px] md:min-w-[40px] text-center text-sm md:text-base">
+                        <span className="px-3 md:px-4 py-1.5 md:py-2 font-bold text-deep-blue-500 min-w-[32px] md:min-w-[40px] text-center text-sm md:text-base">
                           {item.quantity}
                           {(() => {
                             const availableStock = item.variation ? item.variation.stock_quantity : item.product.stock_quantity;
@@ -167,15 +167,15 @@ const Cart: React.FC<CartProps> = ({
                           })()}
                           className="p-1.5 md:p-2 hover:bg-gray-50 transition-colors rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <Plus className="w-3 h-3 md:w-4 md:h-4 text-black" />
+                          <Plus className="w-3 h-3 md:w-4 md:h-4 text-deep-blue-500" />
                         </button>
                       </div>
 
                       <div className="text-right">
-                        <div className="text-xl md:text-2xl font-bold text-black">
+                        <div className="text-xl md:text-2xl font-bold text-teal-600">
                           ₱{(item.price * item.quantity).toLocaleString('en-PH', { minimumFractionDigits: 0 })}
                         </div>
-                        <div className="text-[10px] md:text-xs text-gray-500">
+                        <div className="text-[10px] md:text-xs text-charcoal-500">
                           ₱{item.price.toLocaleString('en-PH', { minimumFractionDigits: 0 })} each
                         </div>
                       </div>
@@ -188,48 +188,48 @@ const Cart: React.FC<CartProps> = ({
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white backdrop-blur-sm rounded-lg shadow-xl p-5 md:p-6 sticky top-24 border border-gray-200">
-              <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6 flex items-center gap-2">
+            <div className="bg-white backdrop-blur-sm rounded-lg shadow-card-hover p-5 md:p-6 sticky top-24 border border-gray-200">
+              <h2 className="text-lg md:text-xl font-bold text-deep-blue-500 mb-4 md:mb-6 flex items-center gap-2">
                 Order Summary
-                <Sparkles className="w-5 h-5 text-gold-600" />
+                <Sparkles className="w-5 h-5 text-teal-500" />
               </h2>
 
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-gray-700 text-sm md:text-base">
+                <div className="flex justify-between text-charcoal-500 text-sm md:text-base">
                   <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
                   <span className="font-semibold">₱{totalPrice.toLocaleString('en-PH', { minimumFractionDigits: 0 })}</span>
                 </div>
-                <div className="flex flex-col gap-1 text-gray-700 text-xs md:text-sm">
+                <div className="flex flex-col gap-1 text-charcoal-500 text-xs md:text-sm">
                   <div className="flex justify-between">
                     <span>Shipping</span>
-                    <span className="text-gray-700 font-medium">Calculated at checkout</span>
+                    <span className="text-charcoal-500 font-medium">Calculated at checkout</span>
                   </div>
-                  <div className="mt-2 space-y-1 text-gray-600">
-                    <p className="font-semibold text-theme-text">J&T Shipping Rates:</p>
+                  <div className="mt-2 space-y-1 text-charcoal-400">
+                    <p className="font-semibold text-deep-blue-500">J&T Shipping Rates:</p>
                     <ul className="list-disc pl-4 space-y-0.5">
                       <li>Luzon: ₱150</li>
                       <li>Visayas: ₱120</li>
                       <li>Mindanao: ₱90</li>
                     </ul>
-                    <p className="font-semibold text-theme-text mt-2">Maxim Delivery:</p>
+                    <p className="font-semibold text-deep-blue-500 mt-2">Maxim Delivery:</p>
                     <p className="pl-4">₱0 (Booking fee paid by customer upon delivery)</p>
                   </div>
                 </div>
 
                 <div className="border-t-2 border-dashed border-gray-200 pt-3 mt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-base md:text-lg font-bold text-gray-900">Total</span>
-                    <span className="text-2xl md:text-3xl font-bold text-black">
+                    <span className="text-base md:text-lg font-bold text-deep-blue-500">Total</span>
+                    <span className="text-2xl md:text-3xl font-bold text-teal-600">
                       ₱{finalTotal.toLocaleString('en-PH', { minimumFractionDigits: 0 })}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1 text-right">+ Shipping fee (calculated on checkout)</p>
+                  <p className="text-xs text-charcoal-400 mt-1 text-right">+ Shipping fee (calculated on checkout)</p>
                 </div>
               </div>
 
               <button
                 onClick={onCheckout}
-                className="w-full bg-navy-900 hover:bg-navy-800 text-white py-3 md:py-4 rounded-lg font-semibold text-sm md:text-base shadow-lg hover:shadow-gold-glow transform hover:scale-105 transition-all mb-3 flex items-center justify-center gap-2 border border-navy-900/20"
+                className="w-full bg-teal-500 hover:bg-teal-600 text-white py-3 md:py-4 rounded-lg font-semibold text-sm md:text-base shadow-glow hover:shadow-glow-lg transform hover:scale-105 transition-all mb-3 flex items-center justify-center gap-2"
               >
                 <CreditCard className="w-5 h-5" />
                 Proceed to Checkout
@@ -237,7 +237,7 @@ const Cart: React.FC<CartProps> = ({
 
               <button
                 onClick={onContinueShopping}
-                className="w-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 hover:border-navy-900 py-2.5 md:py-3 rounded-lg font-medium text-sm md:text-base transition-all flex items-center justify-center gap-2"
+                className="w-full bg-white hover:bg-gray-50 text-deep-blue-500 border border-gray-300 hover:border-teal-400 py-2.5 md:py-3 rounded-lg font-medium text-sm md:text-base transition-all flex items-center justify-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Continue Shopping
@@ -245,16 +245,16 @@ const Cart: React.FC<CartProps> = ({
 
               {/* Trust Badges */}
               <div className="mt-6 pt-6 border-t-2 border-dashed border-gray-200 space-y-2">
-                <p className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
-                  <span className="text-green-500 text-lg">✓</span>
+                <p className="flex items-center gap-2 text-xs md:text-sm text-charcoal-500">
+                  <span className="text-leaf-green-500 text-lg">✓</span>
                   Secure checkout
                 </p>
-                <p className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
-                  <span className="text-green-500 text-lg">✓</span>
+                <p className="flex items-center gap-2 text-xs md:text-sm text-charcoal-500">
+                  <span className="text-leaf-green-500 text-lg">✓</span>
                   Lab-tested products
                 </p>
-                <p className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
-                  <span className="text-green-500 text-lg">✓</span>
+                <p className="flex items-center gap-2 text-xs md:text-sm text-charcoal-500">
+                  <span className="text-leaf-green-500 text-lg">✓</span>
                   Fast delivery 🚚
                 </p>
               </div>

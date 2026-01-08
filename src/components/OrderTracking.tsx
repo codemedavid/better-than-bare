@@ -107,7 +107,7 @@ const OrderTracking: React.FC = () => {
                         <button
                             type="submit"
                             disabled={loading || !orderId.trim()}
-                            className="bg-navy-900 hover:bg-navy-800 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-navy-900/20"
+                            className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? (
                                 <>

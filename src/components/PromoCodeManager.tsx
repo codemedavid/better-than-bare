@@ -128,12 +128,12 @@ const PromoCodeManager: React.FC = () => {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <Tag className="w-6 h-6 text-navy-900" />
+                    <Tag className="w-6 h-6 text-teal-500" />
                     Promo Codes
                 </h2>
                 <button
                     onClick={() => openModal()}
-                    className="flex items-center gap-2 bg-navy-900 text-white px-4 py-2 rounded-lg hover:bg-navy-800 transition-colors shadow-sm"
+                    className="flex items-center gap-2 bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition-colors shadow-sm"
                 >
                     <Plus className="w-4 h-4" />
                     Create New Code
@@ -149,7 +149,7 @@ const PromoCodeManager: React.FC = () => {
                             placeholder="Search by code..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-navy-900 focus:border-transparent text-black"
+                            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent text-black"
                         />
                     </div>
                 </div>
@@ -247,7 +247,7 @@ const PromoCodeManager: React.FC = () => {
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg uppercase placeholder-gray-400 focus:ring-2 focus:ring-navy-900 focus:border-transparent text-black"
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg uppercase placeholder-gray-400 focus:ring-2 focus:ring-teal-500 focus:border-transparent text-black"
                                     placeholder="e.g. SAVE100"
                                     value={formData.code}
                                     onChange={e => setFormData({ ...formData, code: e.target.value })}
@@ -323,7 +323,7 @@ const PromoCodeManager: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-navy-900 text-white rounded-lg font-bold hover:bg-navy-800 transition-colors shadow-lg shadow-navy-900/20"
+                                    className="px-6 py-2 bg-teal-500 text-white rounded-lg font-bold hover:bg-teal-600 transition-colors shadow-lg shadow-teal-500/20"
                                 >
                                     {editingCode ? 'Update Code' : 'Create Code'}
                                 </button>
