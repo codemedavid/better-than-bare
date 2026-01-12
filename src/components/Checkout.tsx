@@ -32,7 +32,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
 
   // Payment
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
-  const [contactMethod, setContactMethod] = useState<'facebook' | 'viber' | ''>('facebook');
+  const [contactMethod, setContactMethod] = useState<'facebook' | 'instagram' | 'fb_business' | ''>('facebook');
   const [notes, setNotes] = useState('');
 
   const [orderMessage, setOrderMessage] = useState<string>('');
@@ -291,7 +291,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
       });
 
       const orderDetails = `
-✨RSPEPTIDE - NEW ORDER
+✨ BETTER THAN BARE - NEW ORDER
 
 📅 ORDER DATE & TIME
 ${dateTimeStamp}
@@ -332,7 +332,7 @@ ${paymentMethod?.name || 'N/A'}
 ${paymentProofUrl ? 'Screenshot attached to order.' : 'Pending'}
 
 📱 CONTACT METHOD
-Instagram: https://ig.me/m/slimmetryph
+${contactMethod === 'facebook' ? 'Facebook Personal' : contactMethod === 'instagram' ? 'Instagram @betterthanbareaesthetics' : 'Facebook Business Page'}
 
 📋 ORDER NUMBER: ${customOrderNumber}
 
@@ -351,10 +351,12 @@ Please confirm this order. Thank you!
 
       // Open contact method based on selection
       const contactUrl = contactMethod === 'facebook'
-        ? 'https://m.me/61585973522665'
-        : contactMethod === 'viber'
-          ? 'viber://chat?number=09665487151'
-          : null;
+        ? 'https://www.facebook.com/share/1EMhRK2Q21/?mibextid=wwXIfr'
+        : contactMethod === 'instagram'
+          ? 'https://www.instagram.com/betterthanbareaesthetics'
+          : contactMethod === 'fb_business'
+            ? 'https://www.facebook.com/profile.php?id=100077030726813'
+            : null;
 
       if (contactUrl) {
         setTimeout(() => {
@@ -395,10 +397,12 @@ Please confirm this order. Thank you!
 
   const handleOpenContact = () => {
     const contactUrl = contactMethod === 'facebook'
-      ? 'https://m.me/61585973522665'
-      : contactMethod === 'viber'
-        ? 'viber://chat?number=09665487151'
-        : null;
+      ? 'https://www.facebook.com/share/1EMhRK2Q21/?mibextid=wwXIfr'
+      : contactMethod === 'instagram'
+        ? 'https://www.instagram.com/betterthanbareaesthetics'
+        : contactMethod === 'fb_business'
+          ? 'https://www.facebook.com/profile.php?id=100077030726813'
+          : null;
 
     if (contactUrl) {
       window.open(contactUrl, '_blank');
@@ -417,7 +421,7 @@ Please confirm this order. Thank you!
               Order Confirmed
             </h1>
             <p className="text-gray-600 mb-4 text-base md:text-lg leading-relaxed">
-              Copy the order message below and send it via {contactMethod === 'facebook' ? 'Facebook Messenger' : 'Viber'} along with your payment screenshot to finalize your research order.
+              Copy the order message below and send it via {contactMethod === 'facebook' ? 'Facebook' : contactMethod === 'instagram' ? 'Instagram' : 'Facebook Page'} along with your payment screenshot to finalize your order.
             </p>
 
             {/* Order ID Display */}
@@ -475,12 +479,12 @@ Please confirm this order. Thank you!
                 className="w-full btn-primary py-4 text-base flex items-center justify-center gap-2 shadow-lg"
               >
                 <MessageCircle className="w-5 h-5" />
-                {contactMethod === 'facebook' ? 'Open Facebook Messenger' : 'Open Viber'} & Send
+                {contactMethod === 'facebook' ? 'Open Facebook' : contactMethod === 'instagram' ? 'Open Instagram' : 'Open FB Page'} & Send
               </button>
 
               {!contactOpened && (
                 <p className="text-sm text-gray-500">
-                  If it doesn't open automatically, please manually send the copied message to <span className="font-bold">{contactMethod === 'facebook' ? 'RS Peptides PH on Facebook' : 'Viber: 09665487151'}</span>
+                  If it doesn't open automatically, please manually send the copied message to <span className="font-bold">{contactMethod === 'facebook' ? 'Better Than Bare on Facebook' : contactMethod === 'instagram' ? '@betterthanbareaesthetics on Instagram' : 'Better Than Bare FB Page'}</span>
                 </p>
               )}
             </div>
@@ -505,7 +509,7 @@ Please confirm this order. Thank you!
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="font-bold text-science-blue-500">4.</span>
-                  <span>Tracking details sent via {contactMethod === 'facebook' ? 'Messenger' : 'Viber'} after dispatch.</span>
+                  <span>Tracking details sent via your selected contact method after dispatch.</span>
                 </li>
               </ul>
             </div>
@@ -842,7 +846,8 @@ Please confirm this order. Thank you!
               <p className="text-xs text-gray-500 mb-4">
                 Choose how you'd like to send your order details after checkout.
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Facebook Personal */}
                 <button
                   type="button"
                   onClick={() => setContactMethod('facebook')}
@@ -855,25 +860,44 @@ Please confirm this order. Thank you!
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
                   <div className="text-left">
-                    <p className="font-bold text-science-blue-900 text-sm">Facebook Messenger</p>
-                    <p className="text-xs text-gray-500">RS Peptides PH</p>
+                    <p className="font-bold text-science-blue-900 text-sm">Facebook</p>
+                    <p className="text-xs text-gray-500">Personal</p>
                   </div>
                 </button>
+
+                {/* Instagram Business */}
                 <button
                   type="button"
-                  onClick={() => setContactMethod('viber')}
-                  className={`p-4 rounded border transition-all flex items-center gap-3 ${contactMethod === 'viber'
+                  onClick={() => setContactMethod('instagram')}
+                  className={`p-4 rounded border transition-all flex items-center gap-3 ${contactMethod === 'instagram'
                     ? 'border-science-blue-600 bg-clinical-blue ring-1 ring-science-blue-600'
                     : 'border-gray-200 hover:border-science-blue-300'
                     }`}
                 >
-                  <svg className="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M11.398.002C9.47.028 5.276.474 3.005 2.6 1.268 4.236.463 6.676.388 9.709c-.076 3.032-.172 8.73 5.31 10.279l.003.001h.004l-.002 2.343s-.04.946.586 1.14c.756.234 1.2-.486 1.922-1.264.396-.427.942-1.055 1.356-1.533 3.736.315 6.609-.405 6.934-.506.75-.233 4.996-.789 5.686-6.44.713-5.836-.343-9.53-2.263-11.193l.004-.003C18.397.564 14.968-.04 11.398.002zm.297 1.954c3.194-.038 6.14.38 7.497 1.563 1.552 1.402 2.236 4.578 1.618 9.603-.536 4.394-3.787 4.86-4.403 5.05-.267.083-2.75.702-5.863.476 0 0-2.322 2.803-3.048 3.535-.115.115-.249.16-.337.14-.124-.03-.158-.176-.156-.39l.026-3.828v-.002c-4.615-1.225-4.346-5.903-4.282-8.497.064-2.593.715-4.63 2.152-6.015 1.696-1.56 5.603-1.962 6.796-1.635z" />
-                    <path d="M12.2 5.21c-.14 0-.26.115-.26.26s.116.26.26.26c1.88.012 3.404 1.548 3.415 3.428 0 .143.115.26.26.26.14 0 .26-.117.26-.26-.01-2.17-1.766-3.936-3.935-3.948zM8.638 7.098c-.134-.024-.28.016-.396.126l-.658.613c-.168.157-.23.39-.168.608.05.177.11.346.178.508.32.816.86 1.622 1.622 2.393.762.77 1.582 1.32 2.416 1.65.175.068.357.13.546.183.29.081.588-.018.755-.244l.552-.698c.12-.156.14-.37.04-.548l-.002-.002a1.5 1.5 0 00-.042-.068L12.55 9.92c-.178-.23-.43-.27-.642-.11l-.59.434a.42.42 0 01-.482.012 11.24 11.24 0 01-1.024-.77 11.24 11.24 0 01-.862-.95.42.42 0 01-.03-.487l.39-.62c.136-.213.114-.47-.064-.67l-1.21-1.422a.409.409 0 00-.398-.14zM12.2 6.584c-.14 0-.258.115-.258.26 0 .143.117.26.26.26 1.32.01 2.39 1.092 2.4 2.416 0 .143.117.26.26.26.144 0 .26-.117.26-.26-.01-1.614-1.316-2.926-2.922-2.936zm0 1.376c-.14 0-.258.115-.258.26-.002.143.115.26.258.26.605.004 1.094.5 1.1 1.104 0 .143.115.26.26.26.143 0 .26-.117.258-.26-.006-.893-.73-1.62-1.618-1.624z" />
+                  <svg className="w-6 h-6 text-pink-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                   </svg>
                   <div className="text-left">
-                    <p className="font-bold text-science-blue-900 text-sm">Viber</p>
-                    <p className="text-xs text-gray-500">09665487151</p>
+                    <p className="font-bold text-science-blue-900 text-sm">Instagram</p>
+                    <p className="text-xs text-gray-500">Business</p>
+                  </div>
+                </button>
+
+                {/* Facebook Business Page */}
+                <button
+                  type="button"
+                  onClick={() => setContactMethod('fb_business')}
+                  className={`p-4 rounded border transition-all flex items-center gap-3 ${contactMethod === 'fb_business'
+                    ? 'border-science-blue-600 bg-clinical-blue ring-1 ring-science-blue-600'
+                    : 'border-gray-200 hover:border-science-blue-300'
+                    }`}
+                >
+                  <svg className="w-6 h-6 text-blue-700" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                  <div className="text-left">
+                    <p className="font-bold text-science-blue-900 text-sm">FB Page</p>
+                    <p className="text-xs text-gray-500">Business</p>
                   </div>
                 </button>
               </div>

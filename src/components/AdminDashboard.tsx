@@ -372,11 +372,11 @@ const AdminDashboard: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 w-full max-w-md border border-gray-200">
           <div className="text-center mb-6">
-            <div className="relative mx-auto w-16 h-16 rounded-full overflow-hidden mb-4 border-2 border-theme-accent/30">
+            <div className="mx-auto mb-4">
               <img
-                src="/rs-peptides-logo.png"
-                alt="RSPEPTIDE"
-                className="w-full h-full object-cover"
+                src="/btb-logo.png"
+                alt="Better Than Bare"
+                className="h-14 w-auto mx-auto object-contain"
               />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-1">Admin Access</h1>
@@ -1184,17 +1184,14 @@ const AdminDashboard: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+                <div className="h-10 flex items-center">
                   <img
-                    src="/rs-peptides-logo.png"
-                    alt="RSPEPTIDE"
-                    className="w-full h-full object-cover"
+                    src="/btb-logo.png"
+                    alt="Better Than Bare"
+                    className="h-10 w-auto object-contain"
                   />
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-gray-900 tracking-tight">
-                    RSPEPTIDE
-                  </h1>
                   <div className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                     <p className="text-xs text-gray-500 font-medium tracking-wide border px-1.5 py-0.5 rounded-full border-gray-200 bg-gray-50">

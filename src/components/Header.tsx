@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useCOAPageSetting } from '../hooks/useCOAPageSetting';
-import { ShoppingCart, Menu, X, Calculator, FileText, HelpCircle, Truck } from 'lucide-react';
+import { ShoppingCart, Menu, X, FlaskConical, HelpCircle, Truck } from 'lucide-react';
 
 interface HeaderProps {
   cartItemsCount: number;
@@ -10,81 +9,59 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClick }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { coaPageEnabled } = useCOAPageSetting();
 
   return (
     <>
-      <header className="bg-white sticky top-0 z-50 border-b border-gray-100 shadow-sm">
-        <div className="container mx-auto px-4 md:px-6 py-4">
+      <header className="bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-blush-100">
+        <div className="container mx-auto px-4 md:px-6 py-3">
           <div className="flex items-center justify-between gap-4">
-            {/* Logo */}
+            {/* Logo - Rectangular */}
             <button
               onClick={() => { onMenuClick(); setMobileMenuOpen(false); }}
               className="flex items-center hover:opacity-90 transition-opacity"
             >
-              <div className="h-10 sm:h-12 flex items-center gap-2">
-                <img
-                  src="/rs-peptides-logo.png"
-                  alt="RSPEPTIDE"
-                  className="h-full w-auto object-contain"
-                />
-                <span className="text-base sm:text-lg font-bold text-science-blue-900">
-                  RS<span className="text-tech-teal">PEPTIDE</span>
-                </span>
-              </div>
+              <img
+                src="/btb-logo.png"
+                alt="Better Than Bare"
+                className="h-10 sm:h-12 w-auto object-contain"
+              />
             </button>
 
             {/* Right Side Navigation */}
             <div className="flex items-center gap-2 md:gap-6 ml-auto">
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex items-center gap-1 lg:gap-4">
+              <nav className="hidden md:flex items-center gap-1 lg:gap-2">
                 <button
                   onClick={onMenuClick}
-                  className="text-sm font-semibold text-science-blue-900 hover:text-tech-teal px-3 py-2 rounded transition-colors"
+                  className="text-sm font-medium text-charcoal-700 hover:text-rose-500 px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
                 >
-                  Catalog
+                  <FlaskConical className="w-4 h-4" />
+                  Products
                 </button>
                 <a
                   href="/track-order"
-                  className="text-sm font-medium text-gray-600 hover:text-science-blue-600 px-3 py-2 rounded transition-colors flex items-center gap-2"
+                  className="text-sm font-medium text-charcoal-600 hover:text-rose-500 px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
                 >
                   <Truck className="w-4 h-4" />
                   Track
                 </a>
                 <a
-                  href="/calculator"
-                  className="text-sm font-medium text-gray-600 hover:text-science-blue-600 px-3 py-2 rounded transition-colors flex items-center gap-2"
-                >
-                  <Calculator className="w-4 h-4" />
-                  Calc
-                </a>
-                {coaPageEnabled && (
-                  <a
-                    href="/coa"
-                    className="text-sm font-medium text-gray-600 hover:text-science-blue-600 px-3 py-2 rounded transition-colors flex items-center gap-2"
-                  >
-                    <FileText className="w-4 h-4" />
-                    COA
-                  </a>
-                )}
-                <a
                   href="/faq"
-                  className="text-sm font-medium text-gray-600 hover:text-science-blue-600 px-3 py-2 rounded transition-colors flex items-center gap-2"
+                  className="text-sm font-medium text-charcoal-600 hover:text-rose-500 px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
                 >
                   <HelpCircle className="w-4 h-4" />
                   FAQ
                 </a>
-
               </nav>
 
               {/* Cart Button */}
               <button
                 onClick={onCartClick}
-                className="relative p-2 text-science-blue-800 hover:bg-clinical-blue rounded-md transition-colors"
+                className="relative p-2.5 text-charcoal-700 hover:bg-blush-50 rounded-xl transition-colors"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {cartItemsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-tech-teal text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                  <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
                     {cartItemsCount > 99 ? '99+' : cartItemsCount}
                   </span>
                 )}
@@ -93,7 +70,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 text-science-blue-800 hover:bg-clinical-blue rounded-md transition-colors"
+                className="md:hidden p-2.5 text-charcoal-700 hover:bg-blush-50 rounded-xl transition-colors"
                 aria-label="Toggle menu"
               >
                 {mobileMenuOpen ? (
@@ -112,21 +89,25 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
         <div className="md:hidden fixed inset-0 z-[60]">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-science-blue-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-charcoal-900/30 backdrop-blur-sm"
             onClick={() => setMobileMenuOpen(false)}
           />
 
           {/* Sidebar Drawer */}
           <div
-            className="absolute top-0 right-0 bottom-0 w-[300px] bg-white shadow-2xl border-l border-gray-100 flex flex-col animate-in slide-in-from-right duration-300"
+            className="absolute top-0 right-0 bottom-0 w-[300px] bg-white shadow-2xl border-l border-blush-100 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Drawer Header */}
-            <div className="flex items-center justify-between p-5 border-b border-gray-100">
-              <span className="font-heading font-bold text-lg text-science-blue-900">Menu</span>
+            <div className="flex items-center justify-between p-5 border-b border-blush-100">
+              <img
+                src="/btb-logo.png"
+                alt="Better Than Bare"
+                className="h-8 w-auto object-contain"
+              />
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-2 text-gray-500 hover:text-science-blue-600 transition-colors rounded hover:bg-clinical-blue"
+                className="p-2 text-charcoal-500 hover:text-rose-500 transition-colors rounded-lg hover:bg-blush-50"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -140,31 +121,33 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
                     onMenuClick();
                     setMobileMenuOpen(false);
                   }}
-                  className="flex items-center gap-3 p-4 rounded-lg text-left font-medium text-science-blue-900 hover:bg-clinical-blue transition-colors"
+                  className="flex items-center gap-3 p-4 rounded-xl text-left font-medium text-charcoal-800 hover:bg-blush-50 transition-colors"
                 >
-                  <div className="p-2 rounded bg-white border border-gray-100 shadow-sm text-science-blue-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  <div className="p-2 rounded-lg bg-blush-50 text-rose-500">
+                    <FlaskConical className="w-[18px] h-[18px]" />
                   </div>
                   Products
                 </button>
 
-                {[
-                  { href: '/track-order', icon: Truck, label: 'Track Order' },
-                  { href: '/calculator', icon: Calculator, label: 'Peptide Calculator' },
-                  { href: '/coa', icon: FileText, label: 'Lab Reports (COA)' },
-                  { href: '/faq', icon: HelpCircle, label: 'FAQ' },
-                ].map((item, idx) => (
-                  <a
-                    key={idx}
-                    href={item.href}
-                    className="flex items-center gap-3 p-4 rounded-lg text-left font-medium text-science-blue-900 hover:bg-clinical-blue transition-colors"
-                  >
-                    <div className="p-2 rounded bg-white border border-gray-100 shadow-sm text-science-blue-600">
-                      <item.icon className="w-[18px] h-[18px]" />
-                    </div>
-                    {item.label}
-                  </a>
-                ))}
+                <a
+                  href="/track-order"
+                  className="flex items-center gap-3 p-4 rounded-xl text-left font-medium text-charcoal-800 hover:bg-blush-50 transition-colors"
+                >
+                  <div className="p-2 rounded-lg bg-blush-50 text-rose-500">
+                    <Truck className="w-[18px] h-[18px]" />
+                  </div>
+                  Track Order
+                </a>
+
+                <a
+                  href="/faq"
+                  className="flex items-center gap-3 p-4 rounded-xl text-left font-medium text-charcoal-800 hover:bg-blush-50 transition-colors"
+                >
+                  <div className="p-2 rounded-lg bg-blush-50 text-rose-500">
+                    <HelpCircle className="w-[18px] h-[18px]" />
+                  </div>
+                  FAQ
+                </a>
               </div>
             </nav>
           </div>
